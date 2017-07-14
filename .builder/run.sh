@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Login to Docker hub to 
-docker login --username=sibyl --password=$DOCKER_PASS
+docker login --username=$DOCKER_USER --password=$DOCKER_PASS
 
 # Download the repo to get lastest versions of Dockerfiles
 rm -rf stencila-images*
