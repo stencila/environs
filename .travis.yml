@@ -1,0 +1,15 @@
+language: generic
+
+sudo: required
+
+services:
+  - docker
+
+before_script:
+  - export STENCILA_TAG=$(date --utc --iso-8601)
+
+script:
+  - ./build.sh
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then ./push.sh; fi
