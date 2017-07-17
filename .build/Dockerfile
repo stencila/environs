@@ -7,7 +7,7 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/
 
-COPY run.sh /usr/app/run.sh
+COPY . /usr/app/
 RUN chmod +x /usr/app/run.sh
 
 COPY crontab /etc/cron.d/builder
