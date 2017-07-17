@@ -7,6 +7,7 @@ services:
 
 before_script:
   - export STENCILA_TAG=$(date --utc --iso-8601)
+  - export STENCILA_IMAGES=$(find -mindepth 1 -maxdepth 1 -type d -not -name '\.*' -printf '%P\n')
 
 script:
   - ./.build/build.sh

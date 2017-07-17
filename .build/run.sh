@@ -6,6 +6,9 @@ curl --location "https://github.com/stencila/images/tarball/master" > stencila-i
 tar -xzf stencila-images.tar.gz
 cd stencila-images-*
 
+# Set env vars
+. vars.sh
+
 # Build images
 . build.sh
 
