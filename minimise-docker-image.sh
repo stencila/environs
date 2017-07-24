@@ -49,7 +49,8 @@ while read -r k; do
   while [ "$LAST" != "$TARGET" ]; do
     echo ".$TARGET"
     LAST="$TARGET"
-    TARGET="$(readlink -f "$TEMPDIR"/files/"$TARGET" || readlink "$TEMPDIR"/files/"$TARGET" || echo "$TARGET")"
+    TARGET="$(readlink "$TEMPDIR"/files/"$TARGET" || echo "$TARGET")"
+    TARGET="$(realpath -s --relative-to="$TEMPDIR"/files/"$LAST" "$TARGET")
     TARGET="${TARGET##$TEMPDIR/files}"
   done
 done <<< "$KEEP" | sort -u > "$TEMPDIR"/keep.txt
