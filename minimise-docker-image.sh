@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 if [ $# -lt 3 ]; then
@@ -14,7 +14,7 @@ fi
 function cleanup {
   if [ -n "$TEMPDIR" -a -d "$TEMPDIR" ]; then
     chmod +w -R "$TEMPDIR"
-    rm -fR "$TEMPDIR"
+#    rm -fR "$TEMPDIR"
   fi
 }
 
@@ -29,8 +29,25 @@ shift
 
 # Make sure stripdoc/strace.out is not created by docker (since then we may not have permission to delete it)
 touch "$TEMPDIR"/strace.out
-docker run --rm -v "$TEMPDIR":/mnt/strace -v `pwd`:/code -v `pwd`/input:/input -v `pwd`/output:/output -v `pwd`/publish:/publish -w /code/talk-mpi-seven-by-seven-2017 --memory 1000000000b --memory-swap 1000000000b --cpu-period 25000 --cpu-quota 25000 -e PARAMETERS='{"env":null,"refresh":null,"memory":null,"docker":null,"cpus":null,"databases":null,"publish":null}' -e OUTPUTDIR=/output/ -e INPUTDIR=/input/ $IN_IMAGE strace -f -o /mnt/strace/strace.out "$@"
-#docker run --rm -v "$TEMPDIR":/mnt/strace $IN_IMAGE strace -f -o /mnt/strace/strace.out "$@"
+# docker run --rm -v "$TEMPDIR":/mnt/strace -v `pwd`:/code -v `pwd`/input:/input -v `pwd`/output:/output -v `pwd`/publish:/publish -w /code/talk-mpi-seven-by-seven-2017 --memory 1000000000b --memory-swap 1000000000b --cpu-period 25000 --cpu-quota 25000 -e PARAMETERS='{"env":null,"refresh":null,"memory":null,"docker":null,"cpus":null,"databases":null,"publish":null}' -e OUTPUTDIR=/output/ -e INPUTDIR=/input/ $IN_IMAGE strace -f -o /mnt/strace/strace.out "$@"
+docker run --rm -v "$TEMPDIR":/mnt/strace -v `pwd`:/code -v `pwd`/input:/input -v `pwd`/output:/output -w /code/ $IN_IMAGE strace -f -o /mnt/strace/strace.out "$@"
+
+
+# Make a sorted list of the files we need to keep based on the strace output
+read -r -d '' READLINKS <<-'HERE' || true
+    KEEP=$(egrep '^[0-9]* *(access|open|execve|stat)\(\"' /mnt/strace/strace.out | sed 's/^[0-9]* *\(access\|open\|execve\|stat\)("\([^"]*\)".*$/\2/' | sort -u)
+    while read -r k; do
+      LAST=""
+      TARGET="$k"
+      while [ "$LAST" != "$TARGET" ]; do
+        echo ".$TARGET"
+        LAST="$TARGET"
+        TARGET="$(readlink -f "$TARGET" || echo "$TARGET")"
+      done
+    done <<< "$KEEP"
+HERE
+
+docker run --rm -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
 
 # Unpack all the files in the image
 mkdir "$TEMPDIR"/files
@@ -41,26 +58,13 @@ docker rm $CONTAINER_ID
 # Make a sorted list of all the files (not symlinks since we want to keep them)
 (cd "$TEMPDIR"/files && (find . -type f | sort > "$TEMPDIR"/all.txt))
 
-# Make a sorted list of the files we need to keep based on the strace output
-KEEP=$(egrep '^[0-9]* *(access|open|execve|stat)\(\"' "$TEMPDIR"/strace.out | sed 's/^[0-9]* *\(access\|open\|execve\|stat\)("\([^"]*\)".*$/\2/' | sort -u)
-while read -r k; do
-  LAST=""
-  TARGET="$k"
-  while [ "$LAST" != "$TARGET" ]; do
-    echo ".$TARGET"
-    LAST="$TARGET"
-    TARGET="$(readlink "$TEMPDIR"/files/"$TARGET" || echo "$TARGET")"
-    TARGET="$(realpath -s --relative-to="$TEMPDIR"/files/"$LAST" "$TARGET")
-    TARGET="${TARGET##$TEMPDIR/files}"
-  done
-done <<< "$KEEP" | sort -u > "$TEMPDIR"/keep.txt
-
 # Find files to exclude from the new image
-comm "$TEMPDIR"/all.txt "$TEMPDIR"/keep.txt -2 -3 | grep -v '/ld-[0-9.]*.so' | grep -v '/bin/bash$' > "$TEMPDIR"/exclude.txt
+comm "$TEMPDIR"/all.txt "$TEMPDIR"/keep.txt -2 -3 | grep -v '/ld-[0-9.]*\.so' | grep -v '/ld\.so\.conf' | grep -v '/bin/bash$' > "$TEMPDIR"/exclude.txt
 
 echo Importing
+cat "$TEMPDIR"/exclude.txt > "$TEMPDIR"/exclude2.txt
 # Import the files back into the new repository (excluding those we want to leave out)
-(cd "$TEMPDIR"/files && (tar -c --exclude-from="$TEMPDIR"/exclude.txt . | docker import - $OUT_REPOSITORY))
+(cd "$TEMPDIR"/files && (tar -c --exclude-from="$TEMPDIR"/exclude2.txt . | docker import - $OUT_REPOSITORY))
 
 echo Running
 # Check the command still runs
