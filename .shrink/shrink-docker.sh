@@ -5,7 +5,7 @@ if [ $# -lt 3 ]; then
   echo "Strips IN_IMAGE down to just the files needed to run COMMAND."
   echo "Saves result to OUT_REPOISTORY and runs the command again to check."
   echo 
-  echo "If you need to specify other command line options for `docker run`"
+  echo "If you need to specify other command line options for 'docker run'"
   echo "set the DOCKER_FLAGS environment variable."
   echo 
   echo "WARNING: If different commands or input may not work on the new image."
