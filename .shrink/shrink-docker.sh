@@ -73,12 +73,12 @@ read -r -d '' READLINKS <<-'HERE' || true
     done <<< "$KEEP"
 HERE
 
-docker run --rm -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
+docker run --rm --cap-add SYS_PTRACE -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
 
 # Unpack all the files in the image
 mkdir "$TEMPDIR"/files
 CONTAINER_ID=$(docker create $IN_IMAGE)
-(cd "$TEMPDIR"/files && (docker export $CONTAINER_ID | tar -x --warning=all))
+(cd "$TEMPDIR"/files && (docker export $CONTAINER_ID | tar -x))
 docker rm $CONTAINER_ID
 
 # Make a sorted list of all the files (not symlinks since we want to keep them)
