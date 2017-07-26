@@ -57,7 +57,7 @@ docker build . -t $STRACE_TAG
 
 # Make sure stripdoc/strace.out is not created by docker (since then we may not have permission to delete it)
 touch "$TEMPDIR"/strace.out
-docker run --rm -v "$TEMPDIR":/mnt/strace $DOCKER_FLAGS $STRACE_TAG strace -f -o /mnt/strace/strace.out "$@"
+docker run --rm --cap-add SYS_PTRACE -v "$TEMPDIR":/mnt/strace $DOCKER_FLAGS $STRACE_TAG strace -f -o /mnt/strace/strace.out "$@"
 
 # Make a sorted list of the files we need to keep based on the strace output
 read -r -d '' READLINKS <<-'HERE' || true
@@ -66,31 +66,48 @@ read -r -d '' READLINKS <<-'HERE' || true
       LAST=""
       TARGET="$k"
       while [ "$LAST" != "$TARGET" ]; do
-        echo ".$TARGET"
+        echo "$TARGET"
         LAST="$TARGET"
         TARGET="$(readlink -f "$TARGET" || echo "$TARGET")"
       done
     done <<< "$KEEP"
 HERE
 
-docker run --rm --cap-add SYS_PTRACE -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
+docker run --rm -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
 
-# Unpack all the files in the image
-mkdir "$TEMPDIR"/files
-CONTAINER_ID=$(docker create $IN_IMAGE)
-(cd "$TEMPDIR"/files && (docker export $CONTAINER_ID | tar -x))
-docker rm $CONTAINER_ID
-
-# Make a sorted list of all the files (not symlinks since we want to keep them)
-(cd "$TEMPDIR"/files && (find . -type f | sort > "$TEMPDIR"/all.txt))
+# Make a sorted list of all the files in the image
+docker run --rm -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE \
+  find / -path /proc -prune \
+      -o -path /sys -prune \
+      -o -path /mnt/strace -prune \
+      -o -type f | sort -u > "$TEMPDIR"/all.txt
 
 # Find files to exclude from the new image
-comm "$TEMPDIR"/all.txt "$TEMPDIR"/keep.txt -2 -3 | grep -v '/ld-[0-9.]*\.so' | grep -v '/ld\.so\.conf' | grep -v '/bin/bash$' > "$TEMPDIR"/exclude.txt
+comm -23 "$TEMPDIR"/all.txt "$TEMPDIR"/keep.txt | grep -v '/ld-[0-9.]*\.so' | grep -v '/ld\.so\.conf' | grep -v '/bin/bash$' > "$TEMPDIR"/exclude.txt
 
-echo Importing
-cat "$TEMPDIR"/exclude.txt > "$TEMPDIR"/exclude2.txt
-# Import the files back into the new repository (excluding those we want to leave out)
-(cd "$TEMPDIR"/files && (tar -c --exclude-from="$TEMPDIR"/exclude2.txt . | docker import - $OUT_REPOSITORY))
+# Create a shrunken image by removing the files in the list
+if [[ "$OUT_REPOSITORY" == *:* ]]; then
+  SHRINK_TAG="$OUT_REPOSITORY-shrinking"
+else
+  SHRINK_TAG="$OUT_REPOSITORY:shrinking"
+fi
+
+cat >Dockerfile <<HERE	
+FROM $IN_IMAGE
+
+COPY exclude.txt /
+RUN (cat /exclude.txt | grep -v "$(which rm)" | tr "\n" "\0" | sudo xargs -0 rm -f | true) && \
+    rm /exclude.txt && \
+    rm "$(which rm)"
+
+HERE
+
+docker build . -t $SHRINK_TAG
+
+# Make a flattened version of the image
+CONTAINER_ID=$(docker create $SHRINK_TAG)
+docker export $CONTAINER_ID | docker import - $OUT_REPOSITORY
+docker rm $CONTAINER_ID
 
 echo
 echo "New image imported as '$OUT_REPOSITORY'."
