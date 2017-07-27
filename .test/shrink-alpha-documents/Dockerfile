@@ -1,3 +1,3 @@
 FROM stencila/alpha
-COPY . .
+COPY cmd.sh document.md ./
 CMD bash cmd.sh

@@ -73,7 +73,7 @@ docker run --rm --cap-add SYS_PTRACE -v "$TEMPDIR":/mnt/strace $DOCKER_FLAGS $ST
 
 # Make a sorted list of the files we need to keep based on the strace output
 read -r -d '' READLINKS <<-'HERE' || true
-    KEEP=$(egrep '^[0-9]* *(access|open|execve|stat)\(\"' /mnt/strace/strace.out | sed 's/^[0-9]* *\(access\|open\|execve\|stat\)("\([^"]*\)".*$/\2/' | sort -u)
+    KEEP=$(egrep '^[0-9]* *([a-z0-9A-Z]*)\(\"' /mnt/strace/strace.out | sed 's/^[0-9]* *\([a-z0-9A-Z]*\)("\([^"]*\)".*$/\2/' | sort -u)
     while read -r k; do
       LAST=""
       TARGET="$k"
@@ -85,7 +85,7 @@ read -r -d '' READLINKS <<-'HERE' || true
     done <<< "$KEEP"
 HERE
 
-docker run --rm --user root -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
+docker run --rm --user root -v "$TEMPDIR":/mnt/strace $IN_IMAGE bash -c "$READLINKS" | sort -u > "$TEMPDIR"/keep.txt
 
 # Make a sorted list of all the files in the image
 docker run --rm --user root -v "$TEMPDIR":/mnt/strace -w /mnt/strace/ $IN_IMAGE \
@@ -111,8 +111,7 @@ USER root
 
 COPY exclude.txt /
 RUN (cat /exclude.txt | grep -v "$(which rm)" | tr "\n" "\0" | xargs -0 rm -f | true) && \
-    rm /exclude.txt && \
-    rm "$(which rm)"
+    rm /exclude.txt
 
 USER $DOCKERUSER
 HERE
