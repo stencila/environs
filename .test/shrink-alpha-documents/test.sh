@@ -11,4 +11,4 @@ FULL=$(docker run test-shrink-alpha-documents)
 
 
 # Still not working 
-SHRINKED=$(docker run test-shrink-alpha-documents-shrinked bash cmd.sh)
+docker run --rm -w /home/guest -u guest -w /home/guest -u guest -e "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" -e "DEBIAN_FRONTEND=noninteractive" test-shrink-alpha-documents-shrinked bash cmd.sh
