@@ -21,21 +21,19 @@ Image                        | Summary
 :----------------------------| :-----------------------------------------------------------------
 [alpha (α)](alpha/README.md) | Comprehensive image for Python, R and/or Node.js
 [iota (ι)](iota/README.md)   | Minimal image for Node.js
-[rho (ρ)](iota/README.md)    | Comprehensive image for R
+[rho (ρ)](rho/README.md)     | Comprehensive image for R
 
-To use these images simply run them with the container port 2000 bound to the port on the local host 
+To use these images simply run them with the container's port 2000 bound to a port on the host (use a value in the range 2010-2100 so that it will be automatically be detected by the Stencila Desktop without clashing):
 
 ```bash
 docker run -p 2100:2000 stencila/alpha
 ```
 
-The the port on the host is in the range 2000-2100 it will be detected by the Stencil Desktop.
-
-Each image is built each day, tagged with the date and pushed to the Docker Hub. This allows you to "pin" your Stencila document to a particular date's image, or to rollback to a particular date;s image.
+Each image is built each day, tagged with the date and pushed to the Docker Hub. This allows you to "pin" your Stencila document to a particular date's image, or to rollback to a particular date's image.
 
 ### Tools
 
-Some of these images are large (i.e. ~1GB compressed). The [shrink-docker.sh](.shrink/shrink-docker.sh) script provides a way to shrink a docker image down to the minimum size necessary.
+Some of these images are large (i.e. ~1GB compressed). The [shrink-docker.sh](.shrink/shrink-docker.sh) script provides a way to shrink an image down to the minimum size necessary to reproduce your document.
 
 
 ### Contributions
