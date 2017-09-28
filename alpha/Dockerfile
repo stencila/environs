@@ -73,9 +73,9 @@ RUN Rscript -e "\
 
 # Install Stencila packages
 # Currently here near the end for easy updating during development
-RUN npm install stencila-node@0.27-document-digest
-RUN pip install https://github.com/stencila/py/tarball/0.27.0
-RUN Rscript -e "devtools::install_github('stencila/r@0.27.0')"
+RUN npm install stencila-node@0.28.0
+RUN pip install https://github.com/stencila/py/tarball/v0.28.0
+RUN Rscript -e "devtools::install_github('stencila/r@v0.28.1')"
 
 # Copy environment reflection script
 COPY environ.sh .environ.sh
@@ -93,5 +93,7 @@ RUN node -e "require('stencila-node').install()"
 RUN python -c "import stencila; stencila.install()"
 RUN Rscript -e "stencila:::install()"
 
+# Turn off authorization for all Stencila hosts
+ENV STENCILA_AUTHORIZATION false
 
 CMD ["node", "-e", "require('stencila-node').run('0.0.0.0', 2000)"]
