@@ -2057,13 +2057,13 @@ let
         sha1 = "20f23a9c925b762ab82705fe2f9db252ace47e34";
       };
     };
-    "stencila-0.27.9" = {
+    "stencila-0.27.10" = {
       name = "stencila";
       packageName = "stencila";
-      version = "0.27.9";
+      version = "0.27.10";
       src = fetchurl {
-        url = "https://registry.npmjs.org/stencila/-/stencila-0.27.9.tgz";
-        sha1 = "519df2ef299332a9057adcfbef3754ccbebd8857";
+        url = "https://registry.npmjs.org/stencila/-/stencila-0.27.10.tgz";
+        sha1 = "32921adf066e31ac4313ca7adf5d347641e009d7";
       };
     };
     "strip-dirs-2.0.0" = {
@@ -4352,13 +4352,13 @@ let
         sha1 = "8fa8cf0411a1a31afd07b06d2902bb9fc815a133";
       };
     };
-    "js-beautify-1.7.3" = {
+    "js-beautify-1.7.4" = {
       name = "js-beautify";
       packageName = "js-beautify";
-      version = "1.7.3";
+      version = "1.7.4";
       src = fetchurl {
-        url = "https://registry.npmjs.org/js-beautify/-/js-beautify-1.7.3.tgz";
-        sha512 = "18pcdycadk2ijyxsgl2kr14hzf75cwp4va0laidqls6haq3h0laj6f7kbbl27mwicqxi3zdin1c34w20ag1ikpm830nffdlif86qgwr";
+        url = "https://registry.npmjs.org/js-beautify/-/js-beautify-1.7.4.tgz";
+        sha512 = "0m3jydg8rd5is3021z595lfrm9qc6398r2nppar8xvx5m0y4q9dlac7hmm7rkyffn3ss5fn8s5zmz7d4fw1bi8q1z4lz5s8x61zb1g9";
       };
     };
     "katex-0.6.0" = {
@@ -4469,13 +4469,13 @@ let
         sha512 = "1z2r5z9wmlg2yca7jplba0qz4r6az53v6z4jh3nz3msri01x9873pflj3xk17jyig2xk0857x0c6528zhyjv59r602fjsvjm29kgc26";
       };
     };
-    "stencila-mini-0.11.4" = {
+    "stencila-mini-0.11.3" = {
       name = "stencila-mini";
       packageName = "stencila-mini";
-      version = "0.11.4";
+      version = "0.11.3";
       src = fetchurl {
-        url = "https://registry.npmjs.org/stencila-mini/-/stencila-mini-0.11.4.tgz";
-        sha1 = "39d932499f7776e5c0bd6eabe53bccb400d461c5";
+        url = "https://registry.npmjs.org/stencila-mini/-/stencila-mini-0.11.3.tgz";
+        sha1 = "b2b4f0ab77dad9f0023d7f7909b8e9304d6ef243";
       };
     };
     "substance-1.0.0-beta.7-preview.16" = {
@@ -7131,13 +7131,14 @@ in
     };
     production = true;
   };
-  stencila-node = nodeEnv.buildNodePackage {
+  "stencila-node-stencila/node" = nodeEnv.buildNodePackage {
     name = "stencila-node";
     packageName = "stencila-node";
     version = "0.28.0";
-    src = fetchurl {
-      url = "https://registry.npmjs.org/stencila-node/-/stencila-node-0.28.0.tgz";
-      sha1 = "0862aa0bf981f44e02f9e63cf3d0569bdd7ecdef";
+    src = fetchgit {
+      url = "git://github.com/stencila/node";
+      rev = "88f05f224688c19a44c2f77d47042f279c6861b3";
+      sha256 = "fbc5fe89f418fa7e47dd45c8398b0c57b2229ec45ea5ea7c5b6550d948afde45";
     };
     dependencies = [
       sources."body-5.1.0"
@@ -7163,7 +7164,7 @@ in
           sources."mime-1.3.4"
         ];
       })
-      sources."stencila-0.27.9"
+      sources."stencila-0.27.10"
       sources."strip-dirs-2.0.0"
       sources."tar-fs-1.16.0"
       sources."untildify-3.0.2"
@@ -7530,7 +7531,7 @@ in
       sources."base-64-0.1.0"
       sources."d3-4.11.0"
       sources."font-awesome-4.7.0"
-      sources."js-beautify-1.7.3"
+      sources."js-beautify-1.7.4"
       sources."katex-0.6.0"
       sources."rehype-parse-3.1.0"
       sources."rehype-remark-2.1.0"
@@ -7543,7 +7544,7 @@ in
       sources."remark-squeeze-paragraphs-3.0.1"
       sources."remark-stringify-3.0.1"
       sources."semantic-ui-css-2.2.12"
-      sources."stencila-mini-0.11.4"
+      sources."stencila-mini-0.11.3"
       sources."substance-1.0.0-beta.7-preview.16"
       sources."timeago.js-3.0.0"
       sources."unified-6.1.5"

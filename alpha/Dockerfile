@@ -3,97 +3,39 @@
 # Currently this is optimised for development (rebuild times) and not
 # for images sizes (will refactor for that later)
 
-FROM ubuntu:16.04
+FROM stencila/nix
 
-# Add a user (creating home and specifying shell) and
-# setup working environment
+# Setup working environment.
 # This needs to be done before any node packages are installed so that they are
 # available form `~/node_modules/` to be `require()`d (global modules cannot be)
-RUN useradd --create-home --shell /bin/bash guest
-WORKDIR /home/guest
 
-# Turn off interactive installs
-# See https://github.com/phusion/baseimage-docker/issues/58
-ENV DEBIAN_FRONTEND noninteractive
+USER guest
 
-# Install language runtimes and system packages that are frequently 
-# required in research computing and/or for language packages
-RUN apt-get update \
- && apt-get install -y \
-    apt-transport-https \
-    build-essential \
-    curl \
-    gcc \
-    g++ \
-    gfortran \
-    jq \
-    libcairo2-dev \
-    libcurl4-openssl-dev \
-    libgif-dev \
-    libjpeg-dev \
-    libssh2-1-dev \
-    libssl-dev \
-    libxml2-dev \
-    software-properties-common \
- && curl --silent https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
- && add-apt-repository 'deb https://deb.nodesource.com/node_7.x xenial main' \
- && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 \
- && add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/' \
- && apt-get update \
- && apt-get install -y \
-    nodejs \
-    python python-dev python-pip \
-    r-base r-base-dev \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/
+COPY default.nix default.nix
+COPY node node
 
-# Install Node packages
-RUN npm install \
-      @stdlib/stdlib
+RUN nix-env . -i . && nix-collect-garbage
+RUN nix-env -i bash && nix-collect-garbage
 
-# Install Python packages
-RUN pip install --upgrade pip \
- && pip install \
-    ipython \
-    jupyter \
-    matplotlib \
-    numpy \
-    pandas \
-    scipy \
-    sympy
-
-# Install R packages
-RUN Rscript -e "\
-    install.packages(strsplit(' \
-      devtools \
-      tidyverse \
-    ', ' +')[[1]][-1], lib='/usr/local/lib/R/site-library', repo='http://cran.rstudio.org/'); \
-    devtools::install_github(strsplit(' \
-    ', ' +')[[1]][-1]);"
-
-# Install Stencila packages
-# Currently here near the end for easy updating during development
-RUN npm install stencila-node@0.28.0
-RUN pip install https://github.com/stencila/py/tarball/v0.28.0
-RUN Rscript -e "devtools::install_github('stencila/r@v0.28.1')"
+RUN nix-shell -j 4 --command 'nix-collect-garbage'
+RUN nix-shell --command 'exit 0'
 
 # Copy environment reflection script
 COPY environ.sh .environ.sh
+USER root
 RUN chmod +x .environ.sh
+USER guest
 
 # Copy README.md
 COPY README.md .
 
-# Switch to guest user
-USER guest
-
 # Install Stencila packages as guest user so that the
 # host files are in home directory
-RUN node -e "require('stencila-node').install()"
-RUN python -c "import stencila; stencila.install()"
-RUN Rscript -e "stencila:::install()"
+RUN nix-shell --command "node -e 'require(\"stencila-node\").install()'"
+RUN nix-shell --command "python -c 'import stencila; stencila.install()'"
+RUN nix-shell --command "Rscript -e 'stencila:::install()'"
 
 # Turn off authorization for all Stencila hosts
 ENV STENCILA_AUTHORIZATION false
 
-CMD ["node", "-e", "require('stencila-node').run('0.0.0.0', 2000)"]
+CMD ["nix-shell", "--command", "node -e 'require(\"stencila-node\").run(\"0.0.0.0\", 2000)'"]

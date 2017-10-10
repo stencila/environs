@@ -1,6 +1,7 @@
 { nixpkgsFunc ?
     # Default for CI reproducibility, optionally override in your configuration.nix.
-    import ((import <nixpkgs> {}).pkgs.fetchFromGitHub {
+    import nixpkgsSrc
+, nixpkgsSrc ? (import <nixpkgs> {}).pkgs.fetchFromGitHub {
       owner = "NixOS"; repo = "nixpkgs";
       rev = "d757d8142e88187388fbea4e884feadb0e33d36f";
       sha256 = "0lraiidcljgqc16w7nbal1jg0396761iyackw1a6h1v1hjkarhsd";
@@ -8,7 +9,7 @@
       #sha256 = "1bcpjc7f1ff5k7vf5rwwb7g7m4j238hi4ssnx7xqglr7hj4ms0cz";
       #rev = "19879836d10f64a10658d1e2a84fc54b090e2087";
       #sha256 = "1x41ch2mgzs85ivvyp3zqkbh4i0winjg69g5x0p3q7avgrhkl7ph";
-    })
+    }
 }:
 let
   stdenv = nixpkgs.stdenv;
@@ -20,13 +21,13 @@ let
       };
     };
   };
-#  nodejs = nixpkgs."nodejs-4_x";
+  # Read the generated node packages
   rawNodePackages = import ./node {
     pkgs = nixpkgs;
     inherit (nixpkgs) system nodejs;
   };
   nodePackages = rawNodePackages // {
-    stencila-node = rawNodePackages.stencila-node.overrideAttrs (oldAttrs: rec {
+    stencila-node = rawNodePackages."stencila-node-stencila/node".overrideAttrs (oldAttrs: rec {
       buildInputs = (oldAttrs.buildInputs or []) ++ (with nixpkgs; [
         pkgconfig
         cairo
@@ -35,8 +36,8 @@ let
       ]);
     });
   };
-  stencilla-py = nixpkgs.pythonPackages.buildPythonApplication rec {
-    pname = "stencilla-py";
+  stencila-py = nixpkgs.pythonPackages.buildPythonApplication rec {
+    pname = "stencila-py";
     version = "0.28.0";
     name = "${pname}-${version}";
     meta = {
@@ -52,7 +53,7 @@ let
       sha256 = "0f2jaddvrpkkmf6abnnbybjlwiggjkqg0fi0kwhak2pbx0d3fkrb";
     };
 
-    buildInputs = with nixpkgs.pythonPackages; [
+    propagatedBuildInputs = with nixpkgs.pythonPackages; [
       six
       numpy
       pandas
@@ -60,57 +61,12 @@ let
       werkzeug
     ];
   };
-  buildRPackage = nixpkgs.callPackage <nixpkgs/pkgs/development/r-modules/generic-builder.nix> {
+  buildRPackage = nixpkgs.callPackage "${nixpkgsSrc}/pkgs/development/r-modules/generic-builder.nix" {
     inherit (nixpkgs.darwin.apple_sdk.frameworks) Cocoa Foundation;
     inherit (nixpkgs) R gettext gfortran;
   };
-  pkgdown = buildRPackage rec {
-    pname = "pkgdown";
-    version = "0.1.0.9000";
-    name = "${pname}-${version}";
-    meta = {
-      homepage = "https://github.com/hadley/pkgdown/";
-      description = "Make Static HTML Documentation for a Package";
-      license = stdenv.lib.licenses.mit;
-      maintainers = with stdenv.lib.maintainers; [ hadley ];
-    };
-
-    src = nixpkgs.fetchgit {   
-      url = "https://github.com/hadley/pkgdown.git";
-      rev = "c8726f9242b2b67f572c16422c83cdc8160c7628";
-      sha256 = "08nqxr0334f8z8k3yyyc2sp3jw1znhbqnyypz5qbr95p4c48k1xl";
-    };
-
-    buildInputs = with nixpkgs; [
-      R
-    ] ++ (with rPackages; [
-      devtools
-      callr
-      desc
-      digest
-      evaluate
-      highlight
-      httr
-      MASS
-      magrittr
-      memoise
-      purrr
-      pkgload
-      R6
-      rematch
-      rlang
-      rmarkdown
-      roxygen2
-      tibble
-      # tools
-      usethis
-      whisker
-      yaml
-      xml2
-    ]);
-  };
-  stencilla-r = stdenv.mkDerivation rec {
-    pname = "stencilla-r";
+  stencila-r = buildRPackage rec {
+    pname = "stencila-r";
     version = "0.28.0";
     name = "${pname}-${version}";
     meta = {
@@ -126,18 +82,20 @@ let
       sha256 = "1cg6xdsgv2hd2lb20amix4nmz99i7750nb5i83k4137da20kvlyn";
     };
 
-    buildInputs = [
-      pkgdown
-    ] ++ (with nixpkgs; [
+    buildInputs = with nixpkgs; [
       R
     ] ++ (with rPackages; [
       devtools
-      roxygen2
-      testthat
-      covr
-    ]));
+      base64enc
+      DBI
+      evaluate
+      httpuv
+      RSQLite
+      tidyverse
+      urltools
+    ]);
   };
-  stencilla-alpha = stdenv.mkDerivation {
+  stencila-alpha = stdenv.mkDerivation {
     name = "stencila-alpha";
     version = "1";
     src = if nixpkgs.lib.inNixShell then null else nixpkgs.nix;
@@ -152,6 +110,8 @@ let
       cairo
       nodejs
       python
+      bash
+      which
     ] ++ (with rPackages; [
       devtools
 
@@ -190,9 +150,9 @@ let
       stdlib
       stencila-node
     ]) ++ [
-      stencilla-py
-      stencilla-r
+      stencila-py
+      stencila-r
     ];
   };
-in stencilla-alpha
+in stencila-alpha
 

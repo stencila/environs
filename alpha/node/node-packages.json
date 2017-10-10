@@ -1,1 +1,1 @@
-[ "stdlib", "stencila-node", "node-gyp", "node-pre-gyp", "node-gyp-build" ]
+[ "stdlib", {"stencila-node" : "stencila/node"}, "node-gyp", "node-pre-gyp", "node-gyp-build" ]
