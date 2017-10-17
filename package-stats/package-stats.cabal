@@ -1,0 +1,38 @@
+name: package-stats
+version: 0.0.1
+cabal-version: 1.12
+build-type: Simple
+license: AllRightsReserved
+description: Downloads logs for R packages and works out the most popular ones
+
+
+executable package-stats
+    main-is: Main.hs
+    build-depends:
+        QuickCheck -any,
+        lens -any,
+        conduit >=1.2.12 && <1.3,
+        conduit-extra -any,
+        containers -any,
+        csv-conduit -any,
+        deepseq -any,
+        http-conduit -any,
+        text -any,
+        time -any,
+        resourcet -any,
+        base -any,
+        doctest -any
+    default-language: Haskell2010
+    hs-source-dirs: src
+    ghc-options: -ferror-spans
+
+--test-suite test-package-stats
+--    type: exitcode-stdio-1.0
+--    main-is: Main.hs
+--    build-depends:
+--        QuickCheck -any,
+--        base -any,
+--        doctest -any
+--    default-language: Haskell2010
+--    hs-source-dirs: test
+--    ghc-options: -ferror-spans

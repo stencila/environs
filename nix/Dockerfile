@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine@sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
 
 # Enable HTTPS support in wget.
 RUN apk add --update openssl
