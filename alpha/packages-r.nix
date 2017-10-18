@@ -961,7 +961,7 @@ lfe
 tigris
 HH
 Ckmeans_1d_dp
-tesseract
+# tesseract
 RefManageR
 icenReg
 mediation
@@ -1000,7 +1000,7 @@ Sleuth3
 sys
 chemometrics
 ggExtra
-Seurat
+# Seurat
 conf_design
 ]
 

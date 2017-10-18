@@ -64,6 +64,8 @@ main = do
             , "rpanel" -- bwidget tcl error checking
             , "carData", "spatstat_data", "asciiSetupReader", "HybridFS", "ggridges", "incgraph" -- new (R package not in nixpkgs yet)
             , "Rsymphony" -- Underlying native library is not in nixpkgs
+            , "Seurat" -- SDMTools.so: undefined symbol: X
+            , "tesseract" -- pkg-config seems to work, but we still get an anticonf error.
             ]
         fixedNames = map (commentOutBroken . fixName) top
     T.putStrLn $ T.unlines fixedNames
