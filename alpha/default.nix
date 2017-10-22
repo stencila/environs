@@ -1,16 +1,16 @@
 { nixpkgsFunc ?
     # Default for CI reproducibility, optionally override in your configuration.nix.
     import nixpkgsSrc
-, nixpkgsSrc ? builtins.filterSource (path: type: !(builtins.any (x: x == baseNameOf path) [".git"])) ./nixpkgs
-#    (import <nixpkgs> {}).pkgs.fetchFromGitHub {
-#      owner = "NixOS"; repo = "nixpkgs";
-#      rev = "d757d8142e88187388fbea4e884feadb0e33d36f";
-#      sha256 = "0lraiidcljgqc16w7nbal1jg0396761iyackw1a6h1v1hjkarhsd";
+, nixpkgsSrc ? # builtins.filterSource (path: type: !(builtins.any (x: x == baseNameOf path) [".git"])) ./nixpkgs
+    (import <nixpkgs> {}).pkgs.fetchFromGitHub {
+      owner = "NixOS"; repo = "nixpkgs";
+      rev = "d1c8c04ea6b2f09b3062301d1a91f6e5d9af7fb6";
+      sha256 = "1r0yflky6qy593n7d0plbkpa3znvrfkmr154d7ysc2g9nfl9ykhs";
 #      #rev = "aebdc892d6aa6834a083fb8b56c43578712b0dab";
 #      #sha256 = "1bcpjc7f1ff5k7vf5rwwb7g7m4j238hi4ssnx7xqglr7hj4ms0cz";
 #      #rev = "19879836d10f64a10658d1e2a84fc54b090e2087";
 #      #sha256 = "1x41ch2mgzs85ivvyp3zqkbh4i0winjg69g5x0p3q7avgrhkl7ph";
-#    }
+    }
 }:
 let
   stdenv = nixpkgs.stdenv;

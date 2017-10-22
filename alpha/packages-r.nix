@@ -319,7 +319,7 @@ FNN
 segmented
 codetools
 sem
-# carData
+carData
 LearnBayes
 moments
 Lahman
@@ -826,7 +826,7 @@ Rmpi
 survMisc
 corpus
 latentnet
-# ggridges
+ggridges
 RVAideMemoire
 d3r
 pspline
