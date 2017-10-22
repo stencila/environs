@@ -46,23 +46,25 @@ If you find yourself having to customize an image a lot, particularly if you nee
 
 1. Create a fork of this repo repository
 
-2. Edit the image's `Dockerfile`. For example, add a new R package,
+2. Build base nix
 
 	```sh
-	RUN Rscript -e "\
-	    install.packages(strsplit(' \
-	      ...
-	      awesome_package
-	      ...
+	docker build nix --tag stencila/nix
 	```
 
-3. Build the image
+3. Edit the image's `packages.nix`. For example, add a new R package,
+
+	```sh
+	TODO add example
+	```
+
+4. Build the image
 
 	```sh
 	docker build images/alpha --tag stencila/alpha
 	```
 
-3. Test that your changes worked. e.g.
+5. Test that your changes worked. e.g.
 
 	```sh
 	# Run a container using the image
@@ -73,7 +75,7 @@ If you find yourself having to customize an image a lot, particularly if you nee
 	library(awesome_package)
 	```
 
-4. Create a Pull Request!
+6. Create a Pull Request!
 
 
 #### Contributing a new image
