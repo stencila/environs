@@ -73,9 +73,10 @@ RUN Rscript -e "\
 
 # Install Stencila packages
 # Currently here near the end for easy updating during development
-RUN npm install stencila-node@0.28.0
-RUN pip install https://github.com/stencila/py/tarball/v0.28.0
-RUN Rscript -e "devtools::install_github('stencila/r@v0.28.1')"
+RUN npm install stencila-node@0.28.1
+## Temporarily remove Python which has not been upgraded to new protocol yet
+## RUN pip install https://github.com/stencila/py/tarball/v0.28.0
+RUN Rscript -e "devtools::install_github('stencila/r', ref='develop')"
 
 # Copy environment reflection script
 COPY environ.sh .environ.sh
@@ -90,7 +91,7 @@ USER guest
 # Install Stencila packages as guest user so that the
 # host files are in home directory
 RUN node -e "require('stencila-node').install()"
-RUN python -c "import stencila; stencila.install()"
+## RUN python -c "import stencila; stencila.install()"
 RUN Rscript -e "stencila:::install()"
 
 # Turn off authorization for all Stencila hosts
