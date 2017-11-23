@@ -10,8 +10,8 @@
 , includeR            ? true
 , includePython       ? true
 , nodePackageSelect   ? import ./node/packages.nix
-, rPackageSelect      ? import ./packages-r.nix
-, pythonPackageSelect ? import ./packages-python.nix
+, rPackageSelect      ? import ./r/packages.nix
+, pythonPackageSelect ? import ./py/packages.nix
 , name                ? "stencila-docker" # The name of the docker image
 , fromImage           ? null              # A base image from which to build a layered docker image
 }:
