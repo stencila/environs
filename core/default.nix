@@ -9,7 +9,7 @@
     # builtins.filterSource (path: type: !(builtins.any (x: x == baseNameOf path) [".git"])) ./nixpkgs
 , includeR            ? true
 , includePython       ? true
-, nodePackageSelect   ? import ./packages-node.nix
+, nodePackageSelect   ? import ./node/packages.nix
 , rPackageSelect      ? import ./packages-r.nix
 , pythonPackageSelect ? import ./packages-python.nix
 , name                ? "stencila-docker" # The name of the docker image
@@ -32,9 +32,11 @@ let
     inherit (nixpkgs) system nodejs;
   };
   nodePackages = rawNodePackages // {
-    stencila-node = rawNodePackages."stencila-node-stencila/node".overrideAttrs (oldAttrs: rec {
+    stencila-node = rawNodePackages."stencila-node-0.28.1".overrideAttrs (oldAttrs: rec {
       buildInputs = (oldAttrs.buildInputs or []) ++ (with nixpkgs; [
         pkgconfig
+        libjpeg
+        giflib
         cairo
         rawNodePackages.node-pre-gyp
         rawNodePackages.node-gyp-build
