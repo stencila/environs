@@ -1,4 +1,4 @@
-### `core/node`
+### `core/node/node2nix`
 
 #### Develop
 
