@@ -1,21 +1,22 @@
-{ pkgs, langName, langRuntime, langPackages }:
+{ nixpkgs, languages }:
 
 let 
   
-  json = pkgs.writeText "${langName}-environ.json" ''{
-    "${langName}": {
-        "id": ${langRuntime.name}
-        "version": ${langRuntime.version},
-        "packages": [${pkgs.lib.concatStringsSep "," (map (package: ''{
+  json = nixpkgs.writeText "language-environ.json" ''{
+    ${nixpkgs.lib.concatStringsSep "," (map (lang: ''
+      "${lang.name}": {
+        "id": "${lang.runtime.name}",
+        "version": "${lang.runtime.version or ""}",
+        "packages": [${nixpkgs.lib.concatStringsSep "," (map (package: ''{
             "id": "${package.name or ""}",
-            "name": "${package.pname or ""}"
+            "name": "${package.pname or ""}",
             "version": "${package.version or ""}"
-          }'') langPackages)}
+          }'') lang.packages)}
         ]
-    }
+      }'') languages)}
   }'';
 
-  show = pkgs.writeScriptBin "${langName}-environ.show" ''
+  show = nixpkgs.writeScriptBin "language-environ.show" ''
     cat ${json}
   '';
 

@@ -9,9 +9,11 @@
     # builtins.filterSource (path: type: !(builtins.any (x: x == baseNameOf path) [".git"])) ./nixpkgs
 , includeR            ? true
 , includePython       ? true
-, nodePackageSelect   ? import ./node/packages.nix
-, rPackageSelect      ? import ./r/packages.nix
-, pythonPackageSelect ? import ./py/packages.nix
+, languageFuncs ? [
+      (import ./node/language.nix)
+    ]
+    ++ (if includeR      then [(import ./r/language.nix )] else [])
+    ++ (if includePython then [(import ./py/language.nix)] else [])
 , name                ? "stencila-docker" # The name of the docker image
 , fromImage           ? null              # A base image from which to build a layered docker image
 }:
@@ -24,166 +26,26 @@ let
       };
     };
   };
+  languages = map (f: f { inherit nixpkgs nixpkgsSrc; }) languageFuncs;
   stdenv = nixpkgs.stdenv;
   lib = nixpkgs.lib;
-  # Read the generated node packages
-  rawNodePackages = import ./node {
-    pkgs = nixpkgs;
-    inherit (nixpkgs) system nodejs;
-  };
-  nodePackages = rawNodePackages // {
-    stencila-node = rawNodePackages."stencila-node-0.28.1".overrideAttrs (oldAttrs: rec {
-      buildInputs = (oldAttrs.buildInputs or []) ++ (with nixpkgs; [
-        pkgconfig
-        libjpeg
-        giflib
-        cairo
-        rawNodePackages.node-pre-gyp
-        rawNodePackages.node-gyp-build
-      ]);
-    });
-  };
-  nodePackageList = nodePackageSelect { inherit nodePackages; };
-  rPackageList = if includeR then [stencila-r] ++ rPackageSelect { inherit (nixpkgs) rPackages; } else [];
-  pythonPackageList = if includePython then [stencila-py] ++ lib.filter (p: p != null) (pythonPackageSelect { inherit (nixpkgs) pythonPackages; }) else [];
-  stencila-py = nixpkgs.pythonPackages.buildPythonPackage rec {
-    pname = "stencila-py";
-    version = "0.28.0";
-    name = "${pname}-${version}";
-    meta = {
-      homepage = "https://github.com/stencila/py/";
-      description = "Stencila for Python";
-      license = stdenv.lib.licenses.apsl20;
-      maintainers = with stdenv.lib.maintainers; [ nokome ];
-    };
-
-    src = nixpkgs.fetchgit {   
-      url = "https://github.com/stencila/py";
-      rev = "9f3a33aca80100c51fcec6e58f537113b1c5511b";
-      sha256 = "0f2jaddvrpkkmf6abnnbybjlwiggjkqg0fi0kwhak2pbx0d3fkrb";
-    };
-
-    propagatedBuildInputs = with nixpkgs.pythonPackages; [
-      six
-      numpy
-      pandas
-      matplotlib
-      werkzeug
-    ];
-  };
-  buildRPackage = nixpkgs.callPackage "${nixpkgsSrc}/pkgs/development/r-modules/generic-builder.nix" {
-    inherit (nixpkgs.darwin.apple_sdk.frameworks) Cocoa Foundation;
-    inherit (nixpkgs) R gettext gfortran;
-  };
-  stencila-r = buildRPackage rec {
-    pname = "stencila-r";
-    version = "0.28.0";
-    name = "${pname}-${version}";
-    meta = {
-      homepage = "https://github.com/stencila/r/";
-      description = "Stencila for R";
-      license = stdenv.lib.licenses.apsl20;
-      maintainers = with stdenv.lib.maintainers; [ nokome ];
-    };
-
-    src = nixpkgs.fetchgit {   
-      url = "https://github.com/stencila/r";
-      rev = "c51026b768f29526f9129454bafc5feebd4d48f0";
-      sha256 = "1cg6xdsgv2hd2lb20amix4nmz99i7750nb5i83k4137da20kvlyn";
-    };
-
-    buildInputs = with nixpkgs; [
-      R
-    ] ++ (with rPackages; [
-      devtools
-      base64enc
-      DBI
-      evaluate
-      httpuv
-      RSQLite
-      tidyverse
-      urltools
-    ]);
-  };
-  stencila-docker-run = nixpkgs.writeScriptBin "stencila-docker-run" ''
+  stencila-docker-run = nixpkgs.writeScriptBin "stencila-docker-run" (''
     #!${stdenv.shell}
-    # TODO figure out how to better include transitive deps
-    # export NODE_PATH=${nixpkgs.lib.concatStringsSep ":" (map (p: p + "/lib/node_modules") nodePackageList)}
-    # export PYTHONPATH=${nixpkgs.lib.concatStringsSep ":" (map (p: p + "/lib/python2.7/site-packages") pythonPackageList)}
-    # export R_LIBS_SITE=${nixpkgs.lib.concatStringsSep ":" (map (p: p + "/library") rPackageList)}
-    export NODE_PATH=`ls -d /nix/store/*/lib/node_modules | tr '\n' ':'`
-    export PYTHONPATH=`ls -d /nix/store/*/lib/python2.7/site-packages | tr '\n' ':'`
-    export R_LIBS_SITE=`ls -d /nix/store/*/library | tr '\n' ':'`
+  '' + (lib.concatMapStrings (lang: lib.concatMapStrings (p:
+  		"# Using " + p + "\n") lang.packages) languages) + ''
+    export NODE_PATH=`for a in /nix/store/*/lib/node_modules; do echo $a; done | tr '\n' ':'`
+    export PYTHONPATH=`for a in /nix/store/*/lib/python2.7/site-packages; do echo $a; done | tr '\n' ':'`
+    export R_LIBS_SITE=`for a in /nix/store/*/library; do echo $a; done | tr '\n' ':'`
     ${stencila-install}/bin/stencila-install
-    ${stencila-run}/bin/stencila-run
-  '';
+    ${(builtins.head languages).stencila-run}/bin/stencila-run
+  '');
   stencila-install = nixpkgs.writeScriptBin "stencila-install" (''
     #!${stdenv.shell}
-    echo Install stencila node
-    node -e 'require("stencila-node").install()'
-  '' + (
-    lib.optionalString includePython ''
-        echo Install stencila python
-        python -c 'import stencila; stencila.install()'
-      ''
-  ) + (
-    lib.optionalString includeR ''
-        echo Install stencila R
-        Rscript -e 'stencila:::install()'
-      ''
-  ));
-  stencila-run = nixpkgs.writeScriptBin "stencila-run" ''
-    node -e 'require("stencila-node").run("0.0.0.0", 2000)'
-  '';
-  environJson = nixpkgs.writeText "environ.json" ''
-    {
-      "node": {
-        "system": "${stdenv.system}",
-        "version": "${nodePackages.stencila-node.version}",
-        "nixPath": "${nodePackages.stencila-node}",
-        "packages": [${lib.concatStringsSep "," (map (p: ''
-          {
-            "name": "${p.name}",
-            "system": "${p.system}",
-            "nixPath": "${p}"
-          }'') nodePackageList)}]
-      },
-      "python": ${
-        if includePython
-          then ''
-            {
-              "system": "${stdenv.system}",
-              "version": "${stencila-py.version}",
-              "nixPath": "${stencila-py}",
-              "packages": [${lib.concatStringsSep "," (map (p: ''
-                {
-                  "name": "${p.name}",
-                  "system": "${p.system}",
-                  "nixPath": "${p}"
-                }'') pythonPackageList)}]
-            },
-          ''
-          else ''null,''
-        }
-      "r": ${
-        if includeR
-          then ''
-            {
-              "system": "${stdenv.system}",
-              "version": "${stencila-r.version}",
-              "nixPath": "${stencila-r}",
-              "packages": [${lib.concatStringsSep "," (map (p: ''
-                {
-                  "name": "${p.name}",
-                  "system": "${p.system}",
-                  "nixPath": "${p}"
-                }'') rPackageList)}]
-            }
-          ''
-          else ''null''
-        }
-    }
-  '';
+  '' + lib.concatMapStrings (lang: ''
+      echo Install stencila ${lang.name}
+    '' + lang.stencila-install) languages);
+  stencila-run = (builtins.head languages).stencila-run;
+  environJson = (import ../.nix/language-environ.nix { inherit nixpkgs languages; }).json;
   stencila-depends = with nixpkgs; [
       curl
       pkgconfig
@@ -197,7 +59,7 @@ let
       which
       sudo
       glibc.bin
-    ] ++ lib.optionals includePython [ python ] ++ lib.optionals includeR [ R ];
+    ] ++ map (lang: lang.runtime) languages;
   stencila-core = stdenv.mkDerivation {
     name = "stencila-core";
     version = "1";
@@ -215,9 +77,7 @@ let
     version = "1";
     buildInputs = [stencila-install stencila-run]
       ++ stencila-depends
-      ++ nodePackageList
-      ++ pythonPackageList
-      ++ rPackageList;
+      ++ map (lang: lang.packages) languages;
   };
   stencila-docker = nixpkgs.dockerTools.buildImage {
     inherit name fromImage;
