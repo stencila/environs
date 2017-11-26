@@ -1,14 +1,15 @@
-{ nixpkgs
-, nixpkgsSrc
-}:
+{ nixpkgs, nixpkgsSrc }:
+
 let
   stdenv = nixpkgs.stdenv;
-  rPackageList = [stencila-r] ++ import ./packages.nix { inherit (nixpkgs) rPackages; };
+
+  runtime = nixpkgs.R;
+
   buildRPackage = nixpkgs.callPackage "${nixpkgsSrc}/pkgs/development/r-modules/generic-builder.nix" {
     inherit (nixpkgs.darwin.apple_sdk.frameworks) Cocoa Foundation;
     inherit (nixpkgs) R gettext gfortran;
   };
-  stencila-r = buildRPackage rec {
+  package = buildRPackage rec {
     pname = "stencila-r";
     version = "0.28.0";
     name = "${pname}-${version}";
@@ -38,13 +39,17 @@ let
       urltools
     ]);
   };
-in {
-  name = "R";
-  runtime = nixpkgs.R;
-  packages = rPackageList;
-  stencila-package = stencila-r;
-  stencila-install = ''
+
+  register = nixpkgs.writeScript "stencila-r-register" ''
+    #!${stdenv.shell}
     Rscript -e 'stencila:::install()'
   '';
-}
 
+  run = nixpkgs.writeScript "stencila-r-run" ''
+    #!${stdenv.shell}
+    Rscript -e 'stencila:::run("0.0.0.0", 2000)'
+  '';
+
+in {
+  inherit runtime package register run;
+}

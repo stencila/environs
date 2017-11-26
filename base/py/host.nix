@@ -1,15 +1,11 @@
-{ nixpkgs
-, nixpkgsSrc
-}:
+{ nixpkgs, nixpkgsSrc }:
+
 let
-  stdenv = nixpkgs.stdenv;
-  lib = nixpkgs.lib;
+  stdenv = nixpkgs.stdenv; 
 
-  python-packages = [stencila-py] ++ lib.filter (p: p != null) (import ./packages.nix {
-    pythonPackages = nixpkgs.pythonPackages;
-  });
+  runtime = nixpkgs.python;
 
-  stencila-py = nixpkgs.pythonPackages.buildPythonPackage rec {
+  package = nixpkgs.pythonPackages.buildPythonPackage rec {
     pname = "stencila-py";
     version = "0.28.0";
     name = "${pname}-${version}";
@@ -35,12 +31,16 @@ let
     ];
   };
 
-in {
-  name = "python";
-  runtime = nixpkgs.python;
-  packages = python-packages;
-  stencila-package = stencila-py;
-  stencila-install = ''
+  register = nixpkgs.writeScript "stencila-py-register" ''
+    #!${stdenv.shell}
     python -c 'import stencila; stencila.install()'
   '';
+
+  run = nixpkgs.writeScript "stencila-py-run" ''
+    #!${stdenv.shell}
+    python -c 'import stencila; stencila.run("0.0.0.0", 2000)'
+  '';
+
+in {
+  inherit runtime package register run;
 }

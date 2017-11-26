@@ -1,16 +1,17 @@
-{ nixpkgs
-, nixpkgsSrc
-}:
+{ nixpkgs, nixpkgsSrc }:
+
 let
   stdenv = nixpkgs.stdenv;
-  lib = nixpkgs.lib;
-  # Read the generated node packages
+
+  runtime = nixpkgs.nodejs;
+
   rawNodePackages = import ./node2nix {
     pkgs = nixpkgs;
     inherit (nixpkgs) system nodejs;
   };
   nodePackages = rawNodePackages // {
-    stencila-node = rawNodePackages."stencila-node-0.28.1".overrideAttrs (oldAttrs: rec {
+    stencilaNode = rawNodePackages."stencila-node-0.28.1".overrideAttrs (oldAttrs: rec {
+      pname = "stencila-node";
       buildInputs = (oldAttrs.buildInputs or []) ++ (with nixpkgs; [
         pkgconfig
         libjpeg
@@ -21,16 +22,18 @@ let
       ]);
     });
   };
+  package = nodePackages.stencilaNode;
 
-in {
-  name = "node";
-  runtime = nixpkgs.nodejs;
-  packages = import ./packages.nix { inherit nodePackages; };
-  stencila-package = nodePackages.stencila-node;
-  stencila-install = ''
+  register = nixpkgs.writeScript "stencila-node-register" ''
+    #!${stdenv.shell}
     node -e 'require("stencila-node").install()'
   '';
-  stencila-run = nixpkgs.writeScriptBin "stencila-run" ''
+
+  run = nixpkgs.writeScript "stencila-node-run" ''
+    #!${stdenv.shell}
     node -e 'require("stencila-node").run("0.0.0.0", 2000)'
   '';
+
+in {
+  inherit runtime package register run;
 }

@@ -1,7 +1,6 @@
-{ nodePackages 
-}:
+{ nixpkgs }:
 
-with nodePackages; [
-  stdlib
-  stencila-node
-]
+nixpkgs.lib.attrValues (import ./node2nix {
+  pkgs = nixpkgs;
+  inherit (nixpkgs) system nodejs;
+})
