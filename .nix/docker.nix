@@ -21,17 +21,9 @@ let
     ${run}/bin/stencila-run
   '');
 
- inputs = with nixpkgs; [
+  inputs = with nixpkgs; [
       bash
-      # Are the following necessary?
-      curl
-      pkgconfig
-      gcc
-      gfortran
       coreutils
-      which
-      sudo
-      glibc.bin
     ]
       ++ [manifest register run cmd]
       ++ map (env: env.host.runtime) envs
