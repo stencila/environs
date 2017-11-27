@@ -5,4 +5,5 @@ import ../.nix/main.nix {
     (import ./py/env.nix)
     (import ./r/env.nix)
   ];
+  fromImage = import ../core;
 }
