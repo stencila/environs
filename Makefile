@@ -17,7 +17,7 @@ clean:
 
 # Reduce verbosity when run on continuous integration servers
 ifeq ($(CI),true)
-NIX_BUILD_OPTIONS := --no-build-output
+NIX_BUILD_OPTIONS := --quiet --no-build-output
 endif
 
 %/node/node2nix: %/node/packages.json
