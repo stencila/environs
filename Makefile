@@ -5,6 +5,7 @@ all:
 	@echo "   make core-py"
 	
 	@echo " Build multi-language image"
+	@echo "   make base-node"
 	@echo "   make core-"
 
 	@echo " Clean up:"
