@@ -14,6 +14,9 @@ let
 
   cmd = nixpkgs.writeScriptBin "stencila-cmd" (''
     #!${stdenv.shell}
+    # Use manifest here so that all the necessary package dependencies are installed
+    # into the Docker image
+    # ${manifest}
     export NODE_PATH=`for a in /nix/store/*/lib/node_modules; do echo $a; done | tr '\n' ':'`
     export PYTHONPATH=`for a in /nix/store/*/lib/python2.7/site-packages; do echo $a; done | tr '\n' ':'`
     export R_LIBS_SITE=`for a in /nix/store/*/library; do echo $a; done | tr '\n' ':'`
