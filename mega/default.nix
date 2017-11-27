@@ -1,5 +1,5 @@
 import ../.nix/main.nix {
-  name = "stencila-mega";
+  name = "stencila/mega";
   envs = [
     (import ./node/env.nix)
     (import ./py/env.nix)
