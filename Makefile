@@ -12,10 +12,9 @@ all:
 	@echo "   make clean"
 
 clean:
-	rm -rf ./*/node/node2nix/
+	
 
 %/node/node2nix: %/node/packages.json
-	mkdir -p $@ && \
 	cd $@ && \
 	node2nix -6 -i ../packages.json
 
