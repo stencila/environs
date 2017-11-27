@@ -2,31 +2,25 @@ all:
 	@echo "Usage examples: "
 	
 	@echo " Build single language image"
-	@echo "   make core-py"
+	@echo "   make core/py-image"
 	
 	@echo " Build multi-language image"
-	@echo "   make base-node"
-	@echo "   make core-"
+	@echo "   make core-image"
 
-	@echo " Clean up:"
+	@echo " Clean up images"
 	@echo "   make clean"
 
 clean:
-	
+	nix-store --delete /nix/store/*-docker-image-stencila-*.tar.gz
+	docker rmi -f $$(docker images | grep "^stencila/" | awk "{print \$$3}") 
 
 %/node/node2nix: %/node/packages.json
 	cd $@ && \
 	node2nix -6 -i ../packages.json
 
-%-node: %/node/node2nix
-	nix-build $*/node
+%-image:
+	@echo nix-build $*
+	@echo docker load -i result
 
-%-r:
-	nix-build $*/r
-
-%-py:
-	nix-build $*/py
-
-%-:
-	$(MAKE) $*/node/node2nix
-	nix-build $*
+%-push:
+	@echo docker push stencila/$*:latest
