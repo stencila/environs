@@ -1,0 +1,6 @@
+[
+  {"stencila-node": "0.28.1"}, 
+  "node-gyp",
+  "node-pre-gyp",
+  "node-gyp-build"
+]
