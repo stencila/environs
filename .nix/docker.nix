@@ -2,7 +2,7 @@
 Generate a Docker image for the environment
 */
 
-{ nixpkgs, envs, name }:
+{ nixpkgs, envs, name, fromImage }:
 
 let
   stdenv = nixpkgs.stdenv;
@@ -35,9 +35,9 @@ let
   
   docker = dockerTools.buildImage {
     name = name;
-    fromImage = null;
+    fromImage = fromImage;
     contents = inputs;
-    runAsRoot = ''
+    runAsRoot = if fromImage != null then null else ''
       #!${stdenv.shell}
       ${dockerTools.shadowSetup}
       mkdir -p /tmp

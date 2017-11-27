@@ -11,7 +11,8 @@ all:
 	@echo "   make clean"
 
 clean:
-	nix-store --delete /nix/store/*-docker-image-stencila-*.tar.gz
+	nix-store --delete /nix/store/*-docker-image-{base,core,mega,node,py,r}.tar.gz
+	nix-store --delete /nix/store/*-docker-layer-{base,core,mega,node,py,r}
 	docker rmi -f $$(docker images | grep "^stencila/" | awk "{print \$$3}") 
 
 %/node/node2nix: %/node/packages.json

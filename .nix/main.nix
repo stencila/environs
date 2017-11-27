@@ -7,6 +7,7 @@
     }
 , name
 , envs
+, fromImage ? null
 }:
 
 let
@@ -31,6 +32,7 @@ let
     nixpkgs = nixpkgs;
     envs = envSets;
     name = name;
+    fromImage = fromImage;
   };
 
 in 
