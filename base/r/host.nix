@@ -26,7 +26,9 @@ let
       sha256 = "1cg6xdsgv2hd2lb20amix4nmz99i7750nb5i83k4137da20kvlyn";
     };
 
-    buildInputs = with nixpkgs; [
+    buildInputs = [];
+
+    propagatedBuildInputs = with nixpkgs; [
       R
     ] ++ (with rPackages; [
       devtools
