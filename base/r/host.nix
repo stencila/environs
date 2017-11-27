@@ -30,6 +30,7 @@ let
 
     propagatedBuildInputs = with nixpkgs; [
       R
+      which
     ] ++ (with rPackages; [
       devtools
       base64enc
