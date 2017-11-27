@@ -16,8 +16,10 @@ clean:
 	docker rmi -f $$(docker images | grep "^stencila/" | awk "{print \$$3}")
 
 # Reduce verbosity when run on continuous integration servers
+# If there is too little output Travis thinks the build has stalled
+# So don't use --quiet option
 ifeq ($(CI),true)
-NIX_BUILD_OPTIONS := --quiet --no-build-output
+NIX_BUILD_OPTIONS := --no-build-output
 endif
 
 %/node/node2nix: %/node/packages.json
