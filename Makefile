@@ -19,8 +19,8 @@ clean:
 	node2nix -6 -i ../packages.json
 
 %-image:
-	@echo nix-build $*
-	@echo docker load -i result
+	nix-build $*
+	docker load -i result
 
 %-push:
-	@echo docker push stencila/$*:latest
+	docker push stencila/$*:latest
