@@ -28,14 +28,14 @@ function teardown {
 function request {
     # Request body options
     if [ -n "$3" ] ; then
-        body="--header 'Content-Type: application/json' --data $3"
+        body="--header Content-Type:application/json --data $3"
     fi
     # Curl's retry option does not retry when "connection refused" error so use
     # a loop for retries. This is necessary while Host server startups up.
     retries=60
     while [ "$retries" -gt 0 ] ; do
         curl --silent \
-             --header 'Accept:application/json' \
+             --header Accept:application/json \
              $body \
              -X "$1" \
              localhost:$PORT"$2" && break
