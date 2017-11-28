@@ -7,8 +7,9 @@ install:
   - make setup
 
 script:
-  - make base/node/
-  - make base/py/
-  - make base/r/
+  # Currently, adding these causes the build to exceed time limit (50mins)
+  #- make base/node/
+  #- make base/py/
+  #- make base/r/
   - make base/
   - make test
