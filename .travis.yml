@@ -3,5 +3,12 @@ language: nix
 services:
   - docker
 
+install:
+  - make setup
+
 script:
-  - make core-image
+  - make base/node/
+  - make base/py/
+  - make base/r/
+  - make base/
+  - make test
