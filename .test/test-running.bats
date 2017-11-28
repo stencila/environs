@@ -15,13 +15,23 @@ function start {
 
 # Stop the last container
 function stop {
-    echo "Stopping $CONTAINER"
-    docker stop "$CONTAINER"
+    if [ -n "$CONTAINER" ] ; then
+        echo "Stopping $CONTAINER"
+        docker stop "$CONTAINER"
+        CONTAINER=
+    fi
 }
 
 # Test teardown stops the container (even after a test failiure)
 function teardown {
     stop
+}
+
+# Some tests are skipped on Travis CI (due to time limit on build)
+function skip_if_ci {
+    if [ "$CI" = true ] ; then
+        skip
+    fi
 }
 
 # Helper functions to make HTTP requests to hosts in containers
@@ -54,6 +64,8 @@ function PUT {
 }
 
 @test "base/node image should run" {
+    skip_if_ci
+
     start "stencila/base/node"
 
     run GET "/"
@@ -67,12 +79,16 @@ function PUT {
 }
 
 @test "base/py image should run" {
+    skip_if_ci
+
     start "stencila/base/py"
 
     skip "Currenly authorization is on. Needs to be turned off for testing"
 }
 
 @test "base/r image should run" {
+    skip_if_ci
+
     start "stencila/base/r"
 
     skip "Currenly authorization is on. Needs to be turned off for testing"
