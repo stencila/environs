@@ -3,5 +3,13 @@ language: nix
 services:
   - docker
 
+install:
+  - make setup
+
 script:
-  - make core-image
+  # Currently, adding these causes the build to exceed time limit (50mins)
+  #- make base/node/
+  #- make base/py/
+  #- make base/r/
+  - make base/
+  - make test
