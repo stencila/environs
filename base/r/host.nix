@@ -11,7 +11,7 @@ let
   };
   package = buildRPackage rec {
     pname = "stencila-r";
-    version = "0.28.0";
+    version = "0.28.2";
     name = "${pname}-${version}";
     meta = {
       homepage = "https://github.com/stencila/r/";
@@ -22,8 +22,8 @@ let
 
     src = nixpkgs.fetchgit {   
       url = "https://github.com/stencila/r";
-      rev = "c51026b768f29526f9129454bafc5feebd4d48f0";
-      sha256 = "1cg6xdsgv2hd2lb20amix4nmz99i7750nb5i83k4137da20kvlyn";
+      rev = "92d49b6d75117828a6fcbb3a665c8cf2d8176493";
+      sha256 = "1pmqw2h01mhijr61qrq10gs95ibm4haqcq33sg0k0hdmrdv8731j";
     };
 
     buildInputs = [];
@@ -37,6 +37,7 @@ let
       DBI
       evaluate
       httpuv
+      roxygen2
       RSQLite
       tidyverse
       urltools
