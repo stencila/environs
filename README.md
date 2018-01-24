@@ -26,7 +26,7 @@ Image                        | Summary
 To use these images simply run them with the container's port 2000 bound to a port on the host. Use a value in the range 2010-2100 so that it will be automatically be detected by the Stencila client (e.g. Stencila Desktop) without clashing:
 
 ```bash
-docker run -p 2100:2000 stencila/core
+docker run -it --rm -p 2100:2000 stencila/core
 ```
 
 ### Tools
@@ -88,7 +88,7 @@ docker load -i result
 Then run the image:
 
 ```bash
-docker run --rm -p 2100:2000 stencila/core/r
+docker run -it --rm -p 2100:2000 stencila/core/r
 ```
 
 To recover space you can clean up the Docker tar archive with:
