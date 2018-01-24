@@ -1,17 +1,15 @@
-language: generic
-
-sudo: required
+language: nix
 
 services:
   - docker
 
-before_script:
-  - export STENCILA_TAG=$(date --utc --iso-8601)
-  - export STENCILA_IMAGES=$(find -mindepth 1 -maxdepth 1 -type d -not -name '\.*' -printf '%P\n')
+install:
+  - make setup
 
 script:
-  - ./.build/build.sh
-  - cd .test && ./test.sh
-
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then ./.build/push.sh; fi
+  # Currently, adding these causes the build to exceed time limit (50mins)
+  #- make base/node/
+  #- make base/py/
+  #- make base/r/
+  - make base/
+  - make test
