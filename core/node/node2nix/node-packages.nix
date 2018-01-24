@@ -356,13 +356,13 @@ let
         sha1 = "0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5";
       };
     };
-    "acorn-5.2.1" = {
+    "acorn-5.3.0" = {
       name = "acorn";
       packageName = "acorn";
-      version = "5.2.1";
+      version = "5.3.0";
       src = fetchurl {
-        url = "https://registry.npmjs.org/acorn/-/acorn-5.2.1.tgz";
-        sha512 = "3ryzhy30vzfnn2a0crafh3qsrx145ali8i88q1bc0lzl1dz0ycmjmmwh2yn9xfjs3vmjxl7nphpwcs4imgz3da5jb8fvjqbrvnjwvcc";
+        url = "https://registry.npmjs.org/acorn/-/acorn-5.3.0.tgz";
+        sha512 = "197zp88clmmxjyvhahqv32kv07q825hf87facxaq8qmvb1swfqnpyy4398dl56sr2fa44f7gjpzzlwy1szqzwww6746y3kmwb6gxs31";
       };
     };
     "foreach-2.0.5" = {
@@ -977,22 +977,22 @@ let
         sha1 = "a8115c55e4a702fe4d150abd3872822a7e09fc98";
       };
     };
-    "commander-2.12.1" = {
+    "commander-2.13.0" = {
       name = "commander";
       packageName = "commander";
-      version = "2.12.1";
+      version = "2.13.0";
       src = fetchurl {
-        url = "https://registry.npmjs.org/commander/-/commander-2.12.1.tgz";
-        sha512 = "36cb2mrf9piidjbqiz8krwx7r9hikgirjxzfrbyk3hd39xpmg489lia9d3cmzci80sx99428hg960sz9j5b72fn7pi928z5289ln8rw";
+        url = "https://registry.npmjs.org/commander/-/commander-2.13.0.tgz";
+        sha512 = "1h27ar13gbld2jk6wk84irqmyz6ya6b4dzmxb6nq8azyi48iq8pqqyq90jwzxqb3i7j167y5fpiys6v7vvjzhm8bbd8rya1kzgr4nri";
       };
     };
-    "is-my-json-valid-2.16.1" = {
+    "is-my-json-valid-2.17.1" = {
       name = "is-my-json-valid";
       packageName = "is-my-json-valid";
-      version = "2.16.1";
+      version = "2.17.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.16.1.tgz";
-        sha512 = "2wmvqb2vfzjbnd2znxkg4sqpksxb9mi1lbr4r5zv535ykxzfv8dbnafra1lhk415wrbg9r1lfhyimcw5xfj3k4ry7inbmcjlnr4zj51";
+        url = "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.17.1.tgz";
+        sha512 = "2qkjhj6i3y40j35y8k722kklm1j8dfwk9506csa3vxr16vv7125v8jzpmkl551gsif98bzn205yj3sb99xi1i4bd6p5a1m81wvj2sa3";
       };
     };
     "pinkie-promise-2.0.1" = {
@@ -2018,7 +2018,7 @@ in
       sources."browserify-transform-tools-1.7.0"
       sources."falafel-2.1.0"
       sources."through-2.3.8"
-      sources."acorn-5.2.1"
+      sources."acorn-5.3.0"
       sources."foreach-2.0.5"
       sources."isarray-0.0.1"
       sources."object-keys-1.0.11"
@@ -2076,8 +2076,8 @@ in
       sources."util-deprecate-1.0.2"
       sources."delayed-stream-1.0.0"
       sources."chalk-1.1.3"
-      sources."commander-2.12.1"
-      sources."is-my-json-valid-2.16.1"
+      sources."commander-2.13.0"
+      sources."is-my-json-valid-2.17.1"
       sources."pinkie-promise-2.0.1"
       sources."ansi-styles-2.2.1"
       sources."escape-string-regexp-1.0.5"

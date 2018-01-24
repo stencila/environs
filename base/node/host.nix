@@ -10,7 +10,7 @@ let
     inherit (nixpkgs) system nodejs;
   };
   nodePackages = rawNodePackages // {
-    stencilaNode = rawNodePackages."stencila-node-0.28.1".overrideAttrs (oldAttrs: rec {
+    stencilaNode = rawNodePackages."stencila-node-0.28.2".overrideAttrs (oldAttrs: rec {
       pname = "stencila-node";
       buildInputs = (oldAttrs.buildInputs or []) ++ (with nixpkgs; [
         pkgconfig
