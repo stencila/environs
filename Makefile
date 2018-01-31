@@ -14,6 +14,9 @@ usage:
 	@echo " Build all images (warning slow!)"
 	@echo "   make images/all"
 
+	@echo " Build docs"
+	@echo "   make docs"
+
 	@echo " Push images (e.g. to Docker hub) e.g"
 	@echo "   make push IMAGE=core/py"
 	@echo "   make push #all images"
@@ -30,6 +33,11 @@ endif
 
 IMAGES := $(shell find images -mindepth 1 -maxdepth 2 -type d -printf '%P\n')
 
+# Hacks for joining words separated by spaces into words separated by commas
+SPACE :=
+SPACE +=
+COMMA := ,
+
 setup:
 	nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
 	mkdir -p .test/libs
@@ -43,9 +51,19 @@ setup:
 %/: FORCE
 	nix-build $(NIX_BUILD_OPTIONS) $*
 	docker load -i result
-FORCE:
 
 images/all: $(patsubst %,%/,$(IMAGES))
+
+
+# Manifest JSON for an image
+docs/%/manifest.json: FORCE
+	@mkdir -p $(dir $@)
+	nix-shell images/$* --run stencila-manifest > $@
+
+# Manifest JSON for all images plus a JSON array of images
+docs: $(patsubst %,docs/%/manifest.json,$(IMAGES))
+	echo '["$(subst $(SPACE),"$(COMMA)",$(IMAGES))"]' > docs/images.json
+
 
 test:
 	cd .test && ./test.sh
@@ -55,3 +73,6 @@ clean:
 	nix-store --delete /nix/store/*-docker-image-{base,core,mega,node,py,r}.tar.gz
 	nix-store --delete /nix/store/*-docker-layer-{base,core,mega,node,py,r}
 	docker rmi -f $$(docker images | grep "^stencila/" | awk "{print \$$3}")
+
+FORCE:
+.PHONY: docs
