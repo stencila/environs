@@ -5,14 +5,14 @@ usage:
 	@echo "   make setup"
 	
 	@echo " Generate Nix packages from NPM packages e.g"
-	@echo "   make core/node/node2nix"
+	@echo "   make images/core/node/node2nix"
 
 	@echo " Build an image (note trailing slash) e.g"
-	@echo "   make core/py/"
-	@echo "   make core/"
+	@echo "   make images/core/py/"
+	@echo "   make images/core/"
 	
 	@echo " Build all images (warning slow!)"
-	@echo "   make all"
+	@echo "   make images/all"
 
 	@echo " Push images (e.g. to Docker hub) e.g"
 	@echo "   make push IMAGE=core/py"
@@ -28,6 +28,8 @@ ifeq ($(CI),true)
 NIX_BUILD_OPTIONS := --no-build-output
 endif
 
+IMAGES := $(shell find images -mindepth 1 -maxdepth 2 -type d -printf '%P\n')
+
 setup:
 	nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
 	mkdir -p .test/libs
@@ -38,14 +40,12 @@ setup:
 %/node/node2nix: %/node/packages.json
 	cd $@ && node2nix -6 -i ../packages.json
 
-IMAGES := $(shell find -mindepth 1 -maxdepth 2 -type d -not -path '\./\.*' -printf '%P\n')
-
 %/: FORCE
 	nix-build $(NIX_BUILD_OPTIONS) $*
 	docker load -i result
 FORCE:
 
-all: $(patsubst %,%/,$(IMAGES))
+images/all: $(patsubst %,%/,$(IMAGES))
 
 test:
 	cd .test && ./test.sh
