@@ -40,10 +40,10 @@ COMMA := ,
 
 setup:
 	nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
-	mkdir -p .test/libs
-	git clone --depth=1 https://github.com/sstephenson/bats .test/libs/bats
-	git clone --depth=1 https://github.com/ztombol/bats-support .test/libs/bats-support
-	git clone --depth=1 https://github.com/ztombol/bats-assert .test/libs/bats-assert
+	mkdir -p tests/libs
+	git clone --depth=1 https://github.com/sstephenson/bats tests/libs/bats
+	git clone --depth=1 https://github.com/ztombol/bats-support tests/libs/bats-support
+	git clone --depth=1 https://github.com/ztombol/bats-assert tests/libs/bats-assert
 
 %/node/node2nix: %/node/packages.json
 	cd $@ && node2nix -6 -i ../packages.json
@@ -66,10 +66,10 @@ docs: $(patsubst %,docs/%/manifest.json,$(IMAGES))
 
 
 test:
-	cd .test && ./test.sh
+	cd tests && ./test.sh
 
 clean:
-	rm -rf ./.test/libs
+	rm -rf tests/libs
 	nix-store --delete /nix/store/*-docker-image-{base,core,mega,node,py,r}.tar.gz
 	nix-store --delete /nix/store/*-docker-layer-{base,core,mega,node,py,r}
 	docker rmi -f $$(docker images | grep "^stencila/" | awk "{print \$$3}")
