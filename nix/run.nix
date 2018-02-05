@@ -10,7 +10,7 @@ let
   
   run = nixpkgs.writeScriptBin "stencila-run" (''
     #!${stdenv.shell}
-    ${(builtins.head envs).host.run}
+    ${(builtins.head envs).host.run} "$@"
   '');
 
 in run

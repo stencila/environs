@@ -21,7 +21,7 @@ let
     export PYTHONPATH=`for a in /nix/store/*/lib/python2.7/site-packages; do echo $a; done | tr '\n' ':'`
     export R_LIBS_SITE=`for a in /nix/store/*/library; do echo $a; done | tr '\n' ':'`
     ${register}/bin/stencila-register
-    ${run}/bin/stencila-run
+    ${run}/bin/stencila-run "$@"
   '');
 
   inputs = with nixpkgs; [

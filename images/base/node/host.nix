@@ -31,7 +31,11 @@ let
 
   run = nixpkgs.writeScript "stencila-node-run" ''
     #!${stdenv.shell}
-    node -e 'require("stencila-node").run("0.0.0.0", 2000)'
+    ADDRESS=''${1:-"0.0.0.0"}
+    PORT=''${2:-2000}
+    AUTHORIZATION=''${3:-false}
+    TIMEOUT=''${4:-3600}
+    node -e "require('stencila-node').run($ADDRESS, $PORT, $AUTHORIZATION, $TIMEOUT)"
   '';
 
 in {
