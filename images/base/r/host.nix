@@ -11,7 +11,7 @@ let
   };
   package = buildRPackage rec {
     pname = "stencila-r";
-    version = "0.28.2";
+    version = "0.28.3";
     name = "${pname}-${version}";
     meta = {
       homepage = "https://github.com/stencila/r/";
@@ -22,8 +22,8 @@ let
 
     src = nixpkgs.fetchgit {   
       url = "https://github.com/stencila/r";
-      rev = "92d49b6d75117828a6fcbb3a665c8cf2d8176493";
-      sha256 = "1pmqw2h01mhijr61qrq10gs95ibm4haqcq33sg0k0hdmrdv8731j";
+      rev = "11dde7e405777fab3f640c9796a59763f53e0c0f";
+      sha256 = "0k6lxhsfwzydwigbssggym7mffa0i8vr26k0ak91p9k8vsvwk7ij";
     };
 
     buildInputs = [];
