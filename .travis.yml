@@ -9,7 +9,7 @@ install:
 script:
   # Currently, adding these causes the build to exceed time limit (50mins)
   #- make images/base/node/
-  #- make images/base/py/
-  #- make images/base/r/
-  - make images/base/
+  - make images/base/py/
+  - make images/base/r/
+  #- make images/base/
   - make test
