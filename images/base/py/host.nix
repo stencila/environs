@@ -23,17 +23,19 @@ let
     };
 
     propagatedBuildInputs = with nixpkgs.pythonPackages; [
-      six
+      matplotlib
       numpy
       pandas
-      matplotlib
+      PyJWT
+      six
+      sphinxcontrib-napoleon
       werkzeug
     ];
   };
 
   register = nixpkgs.writeScript "stencila-py-register" ''
     #!${stdenv.shell}
-    python -c 'import stencila; stencila.install()'
+    python -m 'import stencila; stencila.register()'
   '';
 
   run = nixpkgs.writeScript "stencila-py-run" ''
