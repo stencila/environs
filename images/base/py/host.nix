@@ -5,6 +5,47 @@ let
 
   runtime = nixpkgs.python;
 
+  pockets = nixpkgs.pythonPackages.buildPythonPackage rec {
+    pname = "pockets";
+    version = "0.6.2";
+    meta = {
+      homepage = "https://github.com/RobRuana/pockets";
+      description = "Pockets full of useful Python tools!";
+    };
+
+    src = nixpkgs.fetchgit {   
+      url = "https://github.com/RobRuana/pockets";
+      rev = "993947b968367a077ab2ab07d533effa0a65a539";
+      sha256 = "1sfgbxm65av35sbbvmm67zsnxwdj2l15f4xck723slnd635p8x2k";
+    };
+    doCheck = false;
+
+    propagatedBuildInputs = with nixpkgs.pythonPackages; [
+      six
+    ];
+  };
+
+  sphinxcontrib-napoleon = nixpkgs.pythonPackages.buildPythonPackage rec {
+    pname = "sphinxcontrib-napoleon";
+    version = "0.6.1";
+    meta = {
+      homepage = "https://github.com/sphinx-contrib/napoleon";
+      description = "Marching toward legible docstrings";
+    };
+
+    src = nixpkgs.fetchgit {   
+      url = "https://github.com/sphinx-contrib/napoleon";
+      rev = "e267e986d8e6390557309035a544fcd3d8f8036e";
+      sha256 = "0r9vzwmhrvc151vimvyzrwisal96lbkz1wv82drghwwk27xpfr9b";
+    };
+    doCheck = false;
+
+    propagatedBuildInputs = with nixpkgs.pythonPackages; [
+      six
+      pockets
+    ];
+  };
+
   package = nixpkgs.pythonPackages.buildPythonPackage rec {
     pname = "stencila-py";
     version = "0.28.1";
@@ -26,7 +67,7 @@ let
       matplotlib
       numpy
       pandas
-      PyJWT
+      pyjwt
       six
       sphinxcontrib-napoleon
       werkzeug
@@ -35,7 +76,7 @@ let
 
   register = nixpkgs.writeScript "stencila-py-register" ''
     #!${stdenv.shell}
-    python -m 'import stencila; stencila.register()'
+    python -c 'import stencila; stencila.register()'
   '';
 
   run = nixpkgs.writeScript "stencila-py-run" ''
