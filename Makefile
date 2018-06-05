@@ -46,7 +46,7 @@ setup:
 	git clone --depth=1 https://github.com/ztombol/bats-assert tests/libs/bats-assert
 
 %/node/node2nix: %/node/packages.json
-	cd $@ && node2nix -6 -i ../packages.json
+	cd $@ && node2nix -8 -i ../packages.json
 
 %/: FORCE
 	nix-build $(NIX_BUILD_OPTIONS) $*

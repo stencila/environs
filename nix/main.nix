@@ -1,9 +1,10 @@
 { nixpkgsFunc ? import nixpkgsSrc
 , nixpkgsSrc ?
     (import <nixpkgs> {}).pkgs.fetchFromGitHub {
-      owner = "hamishmack"; repo = "nixpkgs";
-      rev = "d65e439ffffbda9619c8538823fe79230fcd850a";
-      sha256 = "1vrak85b14jn7qk9cspwv0kg3qkpqpbsxdrxspc980pksg475scr";
+      # Release 18.03 (2018-04-04)
+      owner = "NixOS"; repo = "nixpkgs";
+      rev = "120b013e0c082d58a5712cde0a7371ae8b25a601";
+      sha256 = "0hk4y2vkgm1qadpsm4b0q1vxq889jhxzjx3ragybrlwwg54mzp4f";
     }
 , name
 , envs
