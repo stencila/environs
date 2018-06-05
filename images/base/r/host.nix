@@ -36,22 +36,24 @@ let
       base64enc
       DBI
       evaluate
+      globals
       httpuv
+      jose
       roxygen2
       RSQLite
-      tidyverse
       urltools
+      uuid
     ]);
   };
 
   register = nixpkgs.writeScript "stencila-r-register" ''
     #!${stdenv.shell}
-    Rscript -e 'stencila:::install()'
+    Rscript -e 'stencila::register()'
   '';
 
   run = nixpkgs.writeScript "stencila-r-run" ''
     #!${stdenv.shell}
-    Rscript -e 'stencila:::run("0.0.0.0", 2000)'
+    Rscript -e 'stencila::run("0.0.0.0", 2000)'
   '';
 
 in {
