@@ -52,7 +52,6 @@ let
       Cmd = [ "${cmd}/bin/stencila-cmd" ];
       Env = [
         "TEMP=/tmp"
-        "STENCILA_AUTHORIZATION=false"
       ];
       ExposedPorts = {
         "2000/tcp" = {};
