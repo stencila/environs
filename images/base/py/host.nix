@@ -7,7 +7,7 @@ let
 
   package = nixpkgs.pythonPackages.buildPythonPackage rec {
     pname = "stencila-py";
-    version = "0.28.0";
+    version = "0.28.1";
     name = "${pname}-${version}";
     meta = {
       homepage = "https://github.com/stencila/py/";
@@ -18,8 +18,8 @@ let
 
     src = nixpkgs.fetchgit {   
       url = "https://github.com/stencila/py";
-      rev = "add7ba1cdf2fc6910e0f10fac7055274969549c1";
-      sha256 = "0l3b7hxqq21jb1sv6hlnksc15v9xh81rd0c144j4xcy6cjvx5m94";
+      rev = "933e01f5352ad3d8857955f82eec9d3c48e9731f";
+      sha256 = "19yk1270jk40q5nd386nhlxvlna3k8ay39ldyswq31yzvbxiijhp";
     };
 
     propagatedBuildInputs = with nixpkgs.pythonPackages; [
