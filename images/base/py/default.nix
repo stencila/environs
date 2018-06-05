@@ -1,4 +1,4 @@
 import ../../../nix/main.nix {
-  name = "stencila/base/py";
+  name = "stencila/base-py";
   envs = [(import ./env.nix)];
 }
