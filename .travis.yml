@@ -3,6 +3,7 @@ language: nix
 cache:
   directories:
     - /nix/store
+  timeout: 600
 
 services:
   - docker
