@@ -7,7 +7,8 @@ let
 
   rawNodePackages = import ./node2nix {
     pkgs = nixpkgs;
-    inherit (nixpkgs) system nodejs;
+    nodejs = nixpkgs.nodejs-8_x;
+    inherit (nixpkgs) system;
   };
   nodePackages = rawNodePackages // {
     stencilaNode = rawNodePackages."stencila-node-0.28.15".overrideAttrs (oldAttrs: rec {
@@ -17,8 +18,6 @@ let
         libjpeg
         giflib
         cairo
-        rawNodePackages.node-pre-gyp
-        rawNodePackages.node-gyp-build
         zeromq
       ]);
     });

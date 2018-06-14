@@ -49,7 +49,7 @@ setup:
 	cd $@ && node2nix -8 -i ../packages.json
 
 %/: FORCE
-	nix-build $(NIX_BUILD_OPTIONS) $*
+	nix-build --option system x86_64-linux $(NIX_BUILD_OPTIONS) $*
 	docker load -i result
 
 images/all: $(patsubst %,%/,$(IMAGES))
