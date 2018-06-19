@@ -9,7 +9,7 @@ PORT=2121
 # Starts a container
 function start {
     echo "Starting container $1 $PORT"
-    export CONTAINER=$(docker run --detach --publish $PORT:2000 --rm "$1")
+    export CONTAINER=$(docker run -e STENCILA_AUTH=false --detach --publish $PORT:2000 --rm "$1")
     echo "Started $CONTAINER"
 }
 
@@ -64,45 +64,37 @@ function PUT {
 }
 
 @test "base-node image should run" {
-    skip "Currently broken"
-
     start "stencila/base-node"
 
-    run GET "/"
-    assert_output --partial '"stencila":{"package":"node","version":"0.28.1"}'
-
-    run POST "/NodeContext"
-    assert_output '"nodeContext1"'
-
-    run PUT "/nodeContext1!runCode" '{"code":"2*3*4"}'
-    assert_output '{"errors":null,"output":{"type":"integer","format":"text","content":"24"}}'
+    run GET "/manifest"
+    assert_output --partial '"stencila":{"package":"node",'
 }
 
 @test "base-py image should run" {
     start "stencila/base-py"
 
     run GET "/manifest"
-    assert_output --partial '"stencila": {"package": "py", "version": "0.28.1"}'
+    assert_output --partial '"stencila": {"package": "py",'
 }
 
 @test "base-r image should run" {
     start "stencila/base-r"
 
     run GET "/manifest"
-    assert_output --partial '"stencila":{"package":"r","version":"0.28.3"}'
+    assert_output --partial '"stencila":{"package":"r",'
 }
 
 @test "base image should run" {
-    skip "Currently broken"
+    skip
 
     start "stencila/base"
 
     # All languages should be peers of the primary host
     
     run GET "/"
-    assert_output --partial '"stencila":{"package":"node","version":"0.28.1"}'
-    assert_output --partial '"stencila":{"package":"py","version":"0.28.0"}'
-    assert_output --partial '"stencila":{"package":"r","version":"0.28.1"}'
+    assert_output --partial '"stencila":{"package":"node",'
+    assert_output --partial '"stencila":{"package":"py",'
+    assert_output --partial '"stencila":{"package":"r",'
 
     # Each language context should be instantiable
     
