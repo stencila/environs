@@ -33,7 +33,7 @@ let
     #!${stdenv.shell}
     ADDRESS=''${1:-"0.0.0.0"}
     PORT=''${2:-2000}
-    TIMEOUT=''${4:-3600}
+    TIMEOUT=''${3:-3600}
     node -e "require('stencila-node').run({ \
       address: \"$ADDRESS\", \
       port: $PORT, \
