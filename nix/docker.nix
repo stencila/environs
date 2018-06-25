@@ -42,8 +42,9 @@ let
       ${dockerTools.shadowSetup}
       mkdir -p /tmp
       chmod 777 /tmp
+      
       groupadd --system stencila
-      useradd --system --gid stencila --home-dir /stencila --no-create-home stencila
+      useradd --system --gid stencila --uid 1000 --home-dir /stencila --no-create-home stencila
       mkdir -p /stencila
       chown stencila:stencila /stencila
       chmod 755 /stencila
