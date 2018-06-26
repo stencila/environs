@@ -57,6 +57,14 @@ or using the `Makefile` recipe:
 make images/core/node/node2nix
 ```
 
+### Adding package fetched from git
+
+Use `nix-prefetch-git` to get the `sha256` when specifying a package using `nixpkgs.fetchgit` e.g.
+
+```bash
+nix-prefetch-git https://github.com/stencila/r 4ebd3a8106294060316574eb340c7108542f722a
+```
+
 ## Run Stencila in a Nix shell
 
 On NixOS or other linux with Nix installed run:
