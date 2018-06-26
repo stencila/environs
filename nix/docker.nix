@@ -51,6 +51,7 @@ let
     '';
     config = {
       Cmd = [ "${cmd}/bin/stencila-cmd" ];
+      WorkingDir = "/stencila";
       Env = [
         "TEMP=/tmp"
       ];
