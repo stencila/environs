@@ -59,8 +59,8 @@ let
 
     src = nixpkgs.fetchgit {   
       url = "https://github.com/stencila/py";
-      rev = "933e01f5352ad3d8857955f82eec9d3c48e9731f";
-      sha256 = "19yk1270jk40q5nd386nhlxvlna3k8ay39ldyswq31yzvbxiijhp";
+      rev = "f6a245fd239323cad4d230e0bcb3952cab8c4a8a";
+      sha256 = "0g8kskwraarbnjkl7ddhb7w037vd06ii1yffqqk6gzlhlmbgh5y7";
     };
 
     propagatedBuildInputs = with nixpkgs.pythonPackages; [

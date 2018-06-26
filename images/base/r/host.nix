@@ -22,8 +22,8 @@ let
 
     src = nixpkgs.fetchgit {   
       url = "https://github.com/stencila/r";
-      rev = "11dde7e405777fab3f640c9796a59763f53e0c0f";
-      sha256 = "0k6lxhsfwzydwigbssggym7mffa0i8vr26k0ak91p9k8vsvwk7ij";
+      rev = "4ebd3a8106294060316574eb340c7108542f722a";
+      sha256 = "1xzjqpcc89xy6zysh0l6hi5hw9h9vpkzqlmmprd53ah1sjrfnsdl";
     };
 
     buildInputs = [];
@@ -32,11 +32,11 @@ let
       R
       which
     ] ++ (with rPackages; [
-      devtools
       base64enc
+      CodeDepends
       DBI
+      devtools
       evaluate
-      globals
       httpuv
       jose
       roxygen2
