@@ -1,11 +1,11 @@
-## `stencila/images` : Stencila in containers
+## `stencila/environs` : Stencila within reproducible execution environments
 
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-[![Build status](https://travis-ci.org/stencila/images.svg?branch=master)](https://travis-ci.org/stencila/images)
+[![Build status](https://travis-ci.org/stencila/environs.svg?branch=master)](https://travis-ci.org/stencila/environs)
 [![Community](https://img.shields.io/badge/join-community-green.svg)](https://community.stenci.la)
 [![Chat](https://badges.gitter.im/stencila/stencila.svg)](https://gitter.im/stencila/stencila)
 
-This repository provides images and tools for using Stencila within containers. Use cases include:
+This repository provides environs and tools for using Stencila within containers. Use cases include:
 
 - using Stencila packages for R, Python and Node.js without having to install them individually
 
@@ -38,7 +38,7 @@ Some of these images are large (i.e. ~1GB compressed). The [shrink-docker.sh](.s
 
 ### Updating Node.js packages
 
-Node.js environments, such as `images/core/node`, are built using [`node2nix`](https://github.com/svanderburg/node2nix). You can install `node2nix` using:
+Node.js environments, such as `nix/core/node`, are built using [`node2nix`](https://github.com/svanderburg/node2nix). You can install `node2nix` using:
 
 ```bash
 nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
@@ -47,14 +47,14 @@ nix-env -f '<nixpkgs>' -iA nodePackages.node2nix
 `node2nix` generates the files `node2nix/default.nix`, `node2nix/node-packages.nix` and `node2nix/node-env.nix` from `packages.json`. If you update a `packages.json` then re-generate these files using `node2nix` directly:
 
 ```bash
-cd images/core/node/node2nix
+cd nix/core/node/node2nix
 node2nix -6 -i ../packages.json
 ```
 
 or using the `Makefile` recipe:
 
 ```bash
-make images/core/node/node2nix
+make nix/core/node/node2nix
 ```
 
 ### Adding package fetched from git

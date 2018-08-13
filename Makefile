@@ -5,14 +5,14 @@ usage:
 	@echo "   make setup"
 	
 	@echo " Generate Nix packages from NPM packages e.g"
-	@echo "   make images/core/node/node2nix"
+	@echo "   make nix/core/node/node2nix"
 
-	@echo " Build an image (note trailing slash) e.g"
-	@echo "   make images/core/py/"
-	@echo "   make images/core/"
+	@echo " Build a Nix image (note trailing slash) e.g"
+	@echo "   make nix/core/py/"
+	@echo "   make nix/core/"
 	
-	@echo " Build all images (warning slow!)"
-	@echo "   make images/all"
+	@echo " Build all Nix images (warning slow!)"
+	@echo "   make nix/all"
 
 	@echo " Build docs"
 	@echo "   make docs"
@@ -31,7 +31,7 @@ ifeq ($(CI),true)
 NIX_BUILD_OPTIONS := --no-build-output
 endif
 
-IMAGES := $(shell find images -mindepth 1 -maxdepth 2 -type d -printf '%P\n')
+IMAGES := $(shell find nix -mindepth 1 -maxdepth 2 -type d -printf '%P\n')
 
 # Hacks for joining words separated by spaces into words separated by commas
 SPACE :=
@@ -52,13 +52,13 @@ setup:
 	nix-build --option system x86_64-linux $(NIX_BUILD_OPTIONS) $*
 	docker load -i result
 
-images/all: $(patsubst %,%/,$(IMAGES))
+nix/all: $(patsubst %,%/,$(IMAGES))
 
 
 # Manifest JSON for an image
 docs/%/manifest.json: FORCE
 	@mkdir -p $(dir $@)
-	nix-shell images/$* --run stencila-manifest > $@
+	nix-shell nix/$* --run stencila-manifest > $@
 
 # Manifest JSON for all images plus a JSON array of images
 docs: $(patsubst %,docs/%/manifest.json,$(IMAGES))
